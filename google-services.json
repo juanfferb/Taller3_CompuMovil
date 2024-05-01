@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "429505979916",
+    "project_id": "waitless-8ed67",
+    "storage_bucket": "waitless-8ed67.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:429505979916:android:8292c770270997ac283029",
+        "android_client_info": {
+          "package_name": "com.example.taller3"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAh9zLhSwW6pUON_NBhQL1FOnhxso5-zjI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
