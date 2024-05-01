@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "378708425371",
+    "project_id": "taller3-compumovil-deed2",
+    "storage_bucket": "taller3-compumovil-deed2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:378708425371:android:5ece87084ad314b169e43e",
+        "android_client_info": {
+          "package_name": "com.example.taller3_compumovil"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9y-2_PfsRZJxChLfTtiRXrVRicjL-tTg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
