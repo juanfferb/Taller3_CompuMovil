@@ -1,6 +1,7 @@
 package com.example.taller3_compumovil
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
@@ -20,6 +21,8 @@ import com.example.taller3_compumovil.databinding.ActivityMapaBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.firebase.auth.FirebaseAuth
+import org.json.JSONObject
+import java.io.IOException
 
 class MapaActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -74,22 +77,38 @@ class MapaActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             }
 
-        // Add a marker and move the camera
-        val simonBolivar = LatLng(4.660557, -74.090749)
-        mMap.addMarker(MarkerOptions().position(simonBolivar).title("Parque Simón Bolivar"))
+        // Read JSON file and add markers
+        val jsonFileString = getJsonDataFromAsset(applicationContext, "locations.json")
+        val jsonObject = JSONObject(jsonFileString)
 
-        val javeriana = LatLng(4.628308, -74.064929)
-        mMap.addMarker(MarkerOptions().position(javeriana).title("Pontificia Universidad Javeriana"))
+        val locations = jsonObject.getJSONArray("locationsArray")
 
-        val biblioteca = LatLng(4.596862, -74.072810)
-        mMap.addMarker(MarkerOptions().position(biblioteca).title("Biblioteca Luis Angel Arango"))
-
-        val gastronomia = LatLng(4.651711, -74.055819)
-        mMap.addMarker(MarkerOptions().position(gastronomia).title("Zona Gastronómica de Bogotá"))
-
-        val usaquen = LatLng(4.695177, -74.030930)
-        mMap.addMarker(MarkerOptions().position(usaquen).title("Usaquen"))
+        // Add markers from locationsArray
+        for (i in 0 until locations.length()) {
+            val locationObject = locations.getJSONObject(i)
+            val latitude = locationObject.getDouble("latitude")
+            val longitude = locationObject.getDouble("longitude")
+            val title = locationObject.getString("name")
+            val latLng = LatLng(latitude, longitude)
+            mMap.addMarker(MarkerOptions().position(latLng).title(title))
+        }
     }
+
+    // Function to read JSON file from assets folder
+    private fun getJsonDataFromAsset(context: Context, fileName: String): String? {
+        return try {
+            val inputStream = context.assets.open(fileName)
+            val size = inputStream.available()
+            val buffer = ByteArray(size)
+            inputStream.read(buffer)
+            inputStream.close()
+            String(buffer, Charsets.UTF_8)
+        } catch (ex: IOException) {
+            ex.printStackTrace()
+            null
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.opciones, menu)
@@ -106,7 +125,14 @@ class MapaActivity : AppCompatActivity(), OnMapReadyCallback {
                 true
             }
             R.id.menuEstado -> {
-
+                val currentUser = auth.currentUser
+                currentUser?.let {
+                    // Aquí defines tu variable usuario utilizando currentUser, por ejemplo:
+                    val usuario = Usuario(/* Aquí proporciona los datos del usuario actual */)
+                    // Cambias el estado del usuario y actualizas el texto del elemento de menú
+                    usuario.estado = !usuario.estado
+                    item.title = if (usuario.estado) "Disponible" else "Desconectado"
+                }
                 true
             }
             R.id.menuDisponibles -> {

@@ -1,43 +1,56 @@
 package com.example.taller3_compumovil
 
-import android.database.Cursor
 import android.os.Bundle
-import android.provider.ContactsContract
 import android.widget.ListView
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.example.taller3_compumovil.UsuariosDisponiblesAdapter
+import com.example.taller3_compumovil.Data.Usuario
 import com.example.taller3_compumovil.R
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
 
 class UsuariosDisponiblesActivity : AppCompatActivity() {
-    var mProjection: Array<String>? = null
-    var mCursor: Cursor? = null
-    var mUsuariosAdapter: UsuariosDisponiblesAdapter? = null
-    var mlista: ListView? = null
+    private lateinit var auth: FirebaseAuth
+    private lateinit var database: FirebaseDatabase
+    private lateinit var usersReference: DatabaseReference
+    private lateinit var userList: MutableList<Usuario>
+    private var mUsuariosAdapter: UsuariosDisponiblesAdapter? = null
+    private var mlista: ListView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_usuarios_disponibles)
 
-        // 1. Variables
+        auth = FirebaseAuth.getInstance()
+        database = FirebaseDatabase.getInstance()
+        usersReference = database.reference.child("users")
+        userList = mutableListOf()
+
+        // Inicializar la lista y el adaptador
         mlista = findViewById(R.id.listaUsuarios)
-
-        //2. Proyección
-        mProjection =
-            arrayOf(ContactsContract.Profile._ID, ContactsContract.Profile.DISPLAY_NAME_PRIMARY)
-
-        //3. Adaptador
-        mUsuariosAdapter = UsuariosDisponiblesAdapter(this, null, 0)
+        mUsuariosAdapter = UsuariosDisponiblesAdapter(this, userList)
         mlista?.adapter = mUsuariosAdapter
-        initView()
+
+        // Cargar la lista de usuarios disponibles
+        loadAvailableUsers()
     }
 
-    fun initView() {
-        mCursor = contentResolver.query(
-            ContactsContract.Contacts.CONTENT_URI, mProjection, null, null, null
-        )
-        mUsuariosAdapter?.changeCursor(mCursor)
+    private fun loadAvailableUsers() {
+        usersReference.orderByChild("estado").equalTo(true)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    for (snapshot in dataSnapshot.children) {
+                        val user = snapshot.getValue(Usuario::class.java)
+                        user?.let {
+                            userList.add(it)
+                        }
+                    }
+                    // Notificar al adaptador que los datos han cambiado
+                    mUsuariosAdapter?.notifyDataSetChanged()
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    // Manejar errores de cancelación
+                }
+            })
     }
 }

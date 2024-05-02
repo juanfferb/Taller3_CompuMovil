@@ -59,4 +59,6 @@ dependencies {
     testImplementation ("junit:junit:version")
     androidTestImplementation ("androidx.test.ext:junit:version")
     androidTestImplementation ("androidx.test.espresso:espresso-core:version")
+    implementation ("com.github.bumptech.glide:glide:4.12.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
 }
