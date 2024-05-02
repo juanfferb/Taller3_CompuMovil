@@ -1,4 +1,4 @@
-package com.example.taller3_compumovil
+package com.example.taller3_compumovil.Activities
 
 import android.Manifest
 import android.content.Intent
@@ -20,6 +20,7 @@ import com.example.taller3_compumovil.databinding.ActivityMapaBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 
 class MapaActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -28,11 +29,24 @@ class MapaActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var auth: FirebaseAuth
 
+    override fun onStart() {
+        super.onStart()
+        auth = FirebaseAuth.getInstance()
+        val currentUser = auth.currentUser
+        updateUI(currentUser)
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMapaBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Configura la barra de herramientas como la barra de acción de la actividad
+        setSupportActionBar(binding.toolbar)
+        // Cambia el título de la barra de herramientas
+        supportActionBar?.title = "Taller 3"
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
@@ -100,7 +114,7 @@ class MapaActivity : AppCompatActivity(), OnMapReadyCallback {
         return when (item.itemId) {
             R.id.menuLogOut -> {
                 auth.signOut()
-                val intent = Intent(this, LoginActivity::class.java)
+                val intent = Intent(this, MainActivity::class.java)
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 startActivity(intent)
                 true
@@ -116,6 +130,15 @@ class MapaActivity : AppCompatActivity(), OnMapReadyCallback {
                 true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun updateUI(currentUser: FirebaseUser?) {
+        if (currentUser == null) {
+            // Navigate to the login activity
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
         }
     }
 }

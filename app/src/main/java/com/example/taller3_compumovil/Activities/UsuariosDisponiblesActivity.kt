@@ -1,14 +1,10 @@
-package com.example.taller3_compumovil
+package com.example.taller3_compumovil.Activities
 
 import android.database.Cursor
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.widget.ListView
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.example.taller3_compumovil.UsuariosDisponiblesAdapter
 import com.example.taller3_compumovil.R
 
 class UsuariosDisponiblesActivity : AppCompatActivity() {

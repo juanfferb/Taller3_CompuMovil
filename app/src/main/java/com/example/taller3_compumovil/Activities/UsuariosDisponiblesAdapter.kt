@@ -1,4 +1,4 @@
-package com.example.taller3_compumovil
+package com.example.taller3_compumovil.Activities
 
 import android.content.Context
 import android.database.Cursor
