@@ -20,6 +20,9 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.Firebase
@@ -107,7 +110,7 @@ class RegisterActivity : AppCompatActivity() {
         if(requestCode == MY_PERMISSION_REQUEST_LOCATION){// Nuestros permisos
             if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED){ // Validar que si se aceptaron ambos permisos
                 // Permisos aceptados
-                startLocationUpdates()
+                setMyLocation()
             }else{
                 //El permiso no ha sido aceptado
                 Toast.makeText(this, "Permisos denegados :(", Toast.LENGTH_SHORT).show()
@@ -129,34 +132,20 @@ class RegisterActivity : AppCompatActivity() {
         } else {
             // Si tienes permisos
             // Get the last known location
-            startLocationUpdates()
+            setMyLocation()
 
         }
     }
 
     @SuppressLint("MissingPermission")
-    private fun startLocationUpdates() {
+    private fun setMyLocation() {
         // Crear una solicitud de ubicación
-        val locationRequest: LocationRequest = LocationRequest.create()
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-        locationRequest.setInterval(10000) // Intervalo de actualización de ubicación en milisegundos
-
-        // Configurar un callback para recibir actualizaciones de ubicación
-        val locationCallback: LocationCallback = object : LocationCallback() {
-            override fun onLocationResult(locationResult: LocationResult) {
-                super.onLocationResult(locationResult)
-                // Obtener la ubicación actual del resultado
-                val miUbi: Location? = locationResult.lastLocation
-                if (miUbi != null) {
-                    // Actualizar la interfaz de usuario con la ubicación actual
-                    myLocation = miUbi
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location ->
+                if (location != null) {
+                    myLocation = location
                 }
             }
-        }
-
-        // Solicitar actualizaciones de ubicación
-        fusedLocationClient!!.requestLocationUpdates(locationRequest, locationCallback, null)
-
     }
 
     private fun requestLocationPermission(){
