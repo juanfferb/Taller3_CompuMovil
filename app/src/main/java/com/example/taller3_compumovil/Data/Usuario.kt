@@ -1,4 +1,4 @@
-package com.example.taller3_compumovil
+package com.example.taller3_compumovil.Data
 
 class Usuario {
     var nombre = ""

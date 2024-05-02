@@ -1,9 +1,10 @@
-package com.example.taller3_compumovil
+package com.example.taller3_compumovil.Activities
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import com.example.taller3_compumovil.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
@@ -33,7 +34,7 @@ class MainActivity : AppCompatActivity() {
     private fun updateUI(currentUser: FirebaseUser?) {
         if (currentUser != null) {
             // Navigate to the principal activity
-            val intent = Intent(this, PrincipalActivity::class.java)
+            val intent = Intent(this, MapaActivity::class.java)
             intent.putExtra("user"
                 , currentUser.email)
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)

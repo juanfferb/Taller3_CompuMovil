@@ -1,32 +1,37 @@
-package com.example.taller3_compumovil
+package com.example.taller3_compumovil.Activities
 
 import android.content.Intent
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
-import android.content.res.Configuration
 import android.location.Location
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import com.example.taller3_compumovil.Datos.Companion.MY_PERMISSION_REQUEST_LOCATION
+import com.example.taller3_compumovil.Data.Datos.Companion.GALLERY_REQUEST_CODE
+import com.example.taller3_compumovil.Data.Datos.Companion.MY_PERMISSION_REQUEST_LOCATION
+import com.example.taller3_compumovil.Data.Usuario
 import com.example.taller3_compumovil.databinding.ActivityRegisterBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.tasks.OnFailureListener
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.auth.auth
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.UploadTask
+import com.google.firebase.storage.storage
+import java.io.File
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding
@@ -39,6 +44,9 @@ class RegisterActivity : AppCompatActivity() {
     //Location permissions
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var myLocation: Location? = null
+    //Storage
+    private var selectedImageUri: Uri? = null
+    private lateinit var storage: FirebaseStorage
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +60,9 @@ class RegisterActivity : AppCompatActivity() {
         checkLocationPermission()
 
         auth = Firebase.auth
+        storage = Firebase.storage("gs://taller3-compumovil-deed2.appspot.com")
+
+        binding.buttonSelectImage.setOnClickListener { openGallery() }
 
         binding.registerbutton.setOnClickListener {
             val email = binding.editTextEmail.text.toString()
@@ -78,6 +89,7 @@ class RegisterActivity : AppCompatActivity() {
                             myRef = database.getReference(PATH_USERS+user.uid)
                             myRef.setValue(usuario)
                             updateUI(user)
+                            uploadFile()
                         }
                     } else {
                         Toast.makeText(this, "createUserWithEmail:Failure: " + task.exception.toString(),
@@ -158,10 +170,44 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun updateUI(user: FirebaseUser) {
-        val intent = Intent(this, PrincipalActivity::class.java)
+        val intent = Intent(this, MapaActivity::class.java)
         intent.putExtra("user", user.email)
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         startActivity(intent)
+    }
+
+    // Método para abrir la galería y seleccionar una imagen
+    fun openGallery() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        startActivityForResult(intent, GALLERY_REQUEST_CODE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == GALLERY_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
+            // Obtiene la imagen seleccionada por el usuario
+            selectedImageUri = data.data
+            // Muestra la imagen seleccionada en el ImageView
+            binding.imageViewContact.setImageURI(selectedImageUri)
+
+            Toast.makeText(this, "Imagen seleccionada: " + selectedImageUri?.lastPathSegment, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun uploadFile() {
+        if (selectedImageUri != null) {
+            val imageRef = storage.reference.child("images/profile/${auth.currentUser?.uid}/${selectedImageUri?.lastPathSegment}")
+            imageRef.putFile(selectedImageUri!!)
+                .addOnSuccessListener { taskSnapshot ->
+                    Log.i("FBApp", "Successfully uploaded image")
+                }
+                .addOnFailureListener { exception ->
+                    Log.e("FBApp", "Failed to upload image", exception)
+                }
+        } else {
+            Log.e("FBApp", "No image selected")
+        }
     }
 }
 

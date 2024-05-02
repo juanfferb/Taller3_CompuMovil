@@ -1,16 +1,23 @@
-package com.example.taller3_compumovil
+package com.example.taller3_compumovil.Activities
 
 import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import android.widget.Toast
 import com.example.taller3_compumovil.databinding.ActivityLoginBinding
+import com.google.android.gms.tasks.OnFailureListener
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.UploadTask
+import com.google.firebase.storage.ktx.storage
+import java.io.File
 
 
 class LoginActivity : AppCompatActivity() {
@@ -98,7 +105,7 @@ class LoginActivity : AppCompatActivity() {
     private fun updateUI(currentUser: FirebaseUser?) {
         if (currentUser != null) {
             // Navigate to the principal activity
-            val intent = Intent(this, PrincipalActivity::class.java)
+            val intent = Intent(this, MapaActivity::class.java)
             intent.putExtra("user"
                 , currentUser.email)
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)

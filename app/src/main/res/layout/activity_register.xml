@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".Activities.RegisterActivity"
     android:padding="18dp"
     android:background="@color/black"
-    android:gravity="center">
+    android:gravity="center"
+    tools:context=".Activities.RegisterActivity">
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/lato"
         android:text="Register"
         android:textAlignment="center"
         android:textColor="@color/white"
@@ -23,13 +22,13 @@
         android:textStyle="bold"
         android:layout_marginBottom="30dp"/>
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/imageViewContact"
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:src="@drawable/contactos_de_google"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="16dp" />
 
     <Button
         android:id="@+id/buttonSelectImage"
@@ -38,10 +37,9 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="8dp"
         android:backgroundTint="@color/white"
-        android:fontFamily="@font/lato"
         android:text="Seleccionar imagen"
         android:textColor="@color/black"
-        android:padding="4dp"
+        android:padding="8dp"
         android:textSize="10sp" />
     <EditText
         android:id="@+id/editTextName"
@@ -64,35 +62,43 @@
         android:layout_marginBottom="10dp"/>
 
     <EditText
-        android:id="@+id/editTextEdad"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColorHint="#9AFFFFFF"
-        android:textColor="@color/white"
-        android:hint="Ingrese su edad"
-        android:inputType="number"
-        android:layout_marginBottom="10dp"/>
-
-    <EditText
         android:id="@+id/editTextId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColorHint="#9AFFFFFF"
         android:textColor="@color/white"
         android:hint="Ingrese su # de identificación"
-        android:inputType="number"
+        android:inputType="textEmailAddress"
         android:layout_marginBottom="10dp"/>
 
+    <EditText
+        android:id="@+id/editTextEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColorHint="#9AFFFFFF"
+        android:textColor="@color/white"
+        android:hint="Ingrese su correo electrónico"
+        android:inputType="textEmailAddress"
+        android:layout_marginBottom="10dp"/>
+
+    <EditText
+        android:id="@+id/editTextPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:textColorHint="#9AFFFFFF"
+        android:hint="Ingrese su contraseña"
+        android:inputType="textPassword" />
+
     <Button
+        android:layout_marginTop="30dp"
         android:id="@+id/registerbutton"
         android:layout_width="match_parent"
-        android:layout_height="51dp"
-        android:layout_gravity="bottom"
-        android:layout_marginTop="30dp"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="50dp"
         android:backgroundTint="@color/white"
-        android:fontFamily="@font/lato"
         android:text="Crear cuenta"
-        android:textColor="@color/black" />
+        android:textColor="@color/black"
+        android:layout_gravity="bottom"/>
 
 </LinearLayout>
