@@ -2,6 +2,7 @@ package com.example.taller3_compumovil.Activities
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
@@ -13,6 +14,7 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.example.taller3_compumovil.Data.Datos.Companion.MY_PERMISSION_REQUEST_LOCATION
+import com.example.taller3_compumovil.Data.Usuario
 import com.example.taller3_compumovil.R
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -29,6 +31,8 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.Marker
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import org.json.JSONObject
+import java.io.IOException
 import java.lang.Math.atan2
 import java.lang.Math.cos
 import java.lang.Math.sin
@@ -76,27 +80,67 @@ class MapaActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap = googleMap
 
         // Habilitar el botón de "Mi ubicación" en el mapa
-        //mMap.isMyLocationEnabled = true
+        mMap.isMyLocationEnabled = true
 
+        // Obtener la ubicación actual del dispositivo y agregar un marcador
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
+        }
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location ->
+                if (location != null) {
+                    val currentLatLng = LatLng(location.latitude, location.longitude)
+                    mMap.addMarker(MarkerOptions().position(currentLatLng).title("Mi ubicación actual"))
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
+                }
+            }
 
-        // Add a marker and move the camera
-        val simonBolivar = LatLng(4.660557, -74.090749)
-        mMap.addMarker(MarkerOptions().position(simonBolivar).title("Parque Simón Bolivar"))
+        // Read JSON file and add markers
+        val jsonFileString = getJsonDataFromAsset(applicationContext, "locations.json")
+        val jsonObject = JSONObject(jsonFileString)
 
-        val javeriana = LatLng(4.628308, -74.064929)
-        mMap.addMarker(MarkerOptions().position(javeriana).title("Pontificia Universidad Javeriana"))
+        val locations = jsonObject.getJSONArray("locationsArray")
 
-        val biblioteca = LatLng(4.596862, -74.072810)
-        mMap.addMarker(MarkerOptions().position(biblioteca).title("Biblioteca Luis Angel Arango"))
-
-        val gastronomia = LatLng(4.651711, -74.055819)
-        mMap.addMarker(MarkerOptions().position(gastronomia).title("Zona Gastronómica de Bogotá"))
-
-        val usaquen = LatLng(4.695177, -74.030930)
-        mMap.addMarker(MarkerOptions().position(usaquen).title("Usaquen"))
-
+        // Add markers from locationsArray
+        for (i in 0 until locations.length()) {
+            val locationObject = locations.getJSONObject(i)
+            val latitude = locationObject.getDouble("latitude")
+            val longitude = locationObject.getDouble("longitude")
+            val title = locationObject.getString("name")
+            val latLng = LatLng(latitude, longitude)
+            mMap.addMarker(MarkerOptions().position(latLng).title(title))
+        }
         // Revisar permisos
         checkLocationPermission()
+    }
+
+    // Function to read JSON file from assets folder
+    private fun getJsonDataFromAsset(context: Context, fileName: String): String? {
+        return try {
+            val inputStream = context.assets.open(fileName)
+            val size = inputStream.available()
+            val buffer = ByteArray(size)
+            inputStream.read(buffer)
+            inputStream.close()
+            String(buffer, Charsets.UTF_8)
+        } catch (ex: IOException) {
+            ex.printStackTrace()
+            null
+        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -205,7 +249,14 @@ class MapaActivity : AppCompatActivity(), OnMapReadyCallback {
                 true
             }
             R.id.menuEstado -> {
-
+                val currentUser = auth.currentUser
+                currentUser?.let {
+                    // Aquí defines tu variable usuario utilizando currentUser, por ejemplo:
+                    val usuario = Usuario(/* Aquí proporciona los datos del usuario actual */)
+                    // Cambias el estado del usuario y actualizas el texto del elemento de menú
+                    usuario.estado = !usuario.estado
+                    item.title = if (usuario.estado) "Disponible" else "Desconectado"
+                }
                 true
             }
             R.id.menuDisponibles -> {

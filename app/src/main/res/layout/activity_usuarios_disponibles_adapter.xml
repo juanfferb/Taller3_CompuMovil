@@ -9,14 +9,14 @@ android:padding="10dp"
     tools:context=".Activities.UsuariosDisponiblesAdapter">
 
 <ImageView
-    android:id="@+id/imageView"
+    android:id="@+id/fotoUsuario"
     android:layout_width="0dp"
     android:layout_height="40dp"
     android:layout_weight="0.2"
      />
 
     <TextView
-        android:id="@+id/idContacto"
+        android:id="@+id/nombreUsuario"
         android:layout_width="0dp"
         android:layout_height="40dp"
         android:layout_weight="0.5"
@@ -24,7 +24,7 @@ android:padding="10dp"
         android:textSize="18sp" />
 
     <Button
-    android:id="@+id/nombre"
+    android:id="@+id/ubicacionUsuario"
     android:layout_width="0dp"
     android:layout_height="40dp"
     android:layout_weight="0.3"
