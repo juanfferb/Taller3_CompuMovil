@@ -49,6 +49,9 @@ class MapaActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var auth: FirebaseAuth
     private var myLocation: Location? = null
     private var myMarker: Marker? = null
+    private var latitud = 0.0
+    private var longitud = 0.0
+    private var location = LatLng(latitud,longitud)
     //Realtime Database
     private val database = FirebaseDatabase.getInstance()
     private lateinit var myRef: DatabaseReference
@@ -80,6 +83,15 @@ class MapaActivity : AppCompatActivity(), OnMapReadyCallback {
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
+        val intent = intent
+        val userLatitud = intent.getDoubleExtra("latitud", 0.0)
+        val userLongitud = intent.getDoubleExtra("longitud", 0.0)
+
+        val userLocation = LatLng(userLatitud, userLongitud)
+        location = userLocation
+        mMap.addMarker(MarkerOptions().position(userLocation).title("Usuario selecionado"))
+
+        checkLocationPermission()
 
     }
 
@@ -135,7 +147,7 @@ class MapaActivity : AppCompatActivity(), OnMapReadyCallback {
         if(requestCode == MY_PERMISSION_REQUEST_LOCATION){// Nuestros permisos
             if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED){ // Validar que si se aceptaron ambos permisos
                 // Permisos aceptados
-                startLocationUpdates()
+                startLocationUpdates(location)
             }else{
                 //El permiso no ha sido aceptado
                 Toast.makeText(this, "Permisos denegados :(", Toast.LENGTH_SHORT).show()
@@ -156,13 +168,13 @@ class MapaActivity : AppCompatActivity(), OnMapReadyCallback {
             requestLocationPermission()
         } else {
             // Si tienes permisos
-            startLocationUpdates()
+            startLocationUpdates(location)
 
         }
     }
 
     @SuppressLint("MissingPermission")
-    private fun startLocationUpdates() {
+    private fun startLocationUpdates(userLocation: LatLng) {
         // Crear una solicitud de ubicación
         val locationRequest: LocationRequest = LocationRequest.create()
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)

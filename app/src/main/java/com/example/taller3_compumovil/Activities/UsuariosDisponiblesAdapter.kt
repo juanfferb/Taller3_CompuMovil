@@ -1,6 +1,7 @@
 package com.example.taller3_compumovil.Activities
 import android.content.Context
 import android.content.Intent
+import android.location.Location
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -53,6 +54,7 @@ class UsuariosDisponiblesAdapter(
             intent.putExtra("latitud", usuario.latitud)
             intent.putExtra("longitud", usuario.longitud)
             intent.putExtra("uid", usuario.uid)
+
             context.startActivity(intent)
         }
 
