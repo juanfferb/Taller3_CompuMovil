@@ -85,6 +85,7 @@ class RegisterActivity : AppCompatActivity() {
                             usuario.nombre = binding.editTextName.text.toString()
                             usuario.apellido = binding.editTextLastName.text.toString()
                             usuario.noIdentificacion = binding.editTextId.text.toString().toInt()
+                            usuario.estado = true
                             if(myLocation != null){
                                 usuario.latitud = myLocation!!.latitude
                                 usuario.longitud = myLocation!!.longitude

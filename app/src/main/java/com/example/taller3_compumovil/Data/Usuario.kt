@@ -6,4 +6,5 @@ class Usuario {
     var noIdentificacion = 0
     var latitud = 0.0
     var longitud = 0.0
+    var estado: Boolean = true
 }
