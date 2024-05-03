@@ -31,6 +31,8 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.Marker
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import org.json.JSONObject
 import java.io.IOException
 import java.lang.Math.atan2
@@ -47,6 +49,11 @@ class MapaActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var auth: FirebaseAuth
     private var myLocation: Location? = null
     private var myMarker: Marker? = null
+    //Realtime Database
+    private val database = FirebaseDatabase.getInstance()
+    private lateinit var myRef: DatabaseReference
+    val PATH_USERS="users/"
+
     override fun onStart() {
         super.onStart()
         auth = FirebaseAuth.getInstance()
@@ -251,11 +258,21 @@ class MapaActivity : AppCompatActivity(), OnMapReadyCallback {
             R.id.menuEstado -> {
                 val currentUser = auth.currentUser
                 currentUser?.let {
-                    // Aquí defines tu variable usuario utilizando currentUser, por ejemplo:
-                    val usuario = Usuario(/* Aquí proporciona los datos del usuario actual */)
-                    // Cambias el estado del usuario y actualizas el texto del elemento de menú
-                    usuario.estado = !usuario.estado
-                    item.title = if (usuario.estado) "Disponible" else "Desconectado"
+                    // Obtén una referencia a la ubicación del usuario en la base de datos
+                    myRef = database.getReference(PATH_USERS+currentUser.uid)
+                    myRef.get().addOnSuccessListener { dataSnapshot ->
+                        // Obtiene el usuario actual de la base de datos
+                        val usuario = dataSnapshot.getValue(Usuario::class.java)
+                        usuario?.let {
+                            // Cambia el estado del usuario
+                            it.estado = !it.estado
+                            // Actualiza el estado del usuario en la base de datos
+                            myRef.setValue(it)
+                            // Actualiza el texto del elemento de menú
+                            item.title = if (it.estado) "Disponible" else "Desconectado"
+                            Toast.makeText(this, "Estado actualizado: " + item.title, Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 }
                 true
             }
