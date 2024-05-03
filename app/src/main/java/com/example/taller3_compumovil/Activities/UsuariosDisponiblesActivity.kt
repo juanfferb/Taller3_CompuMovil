@@ -59,19 +59,59 @@ class UsuariosDisponiblesActivity : AppCompatActivity() {
 
         // Cargar la lista de usuarios disponibles
         loadAvailableUsers()
+        nuevoUsuarioDisponible()
 
     }
 
+    private fun nuevoUsuarioDisponible(){
+        myRef.addChildEventListener(object : ChildEventListener {
+            override fun onChildAdded(dataSnapshot: DataSnapshot, prevChildKey: String?) {
+                // Este método se llama cuando se agrega un nodo hijo
+            }
+
+            override fun onChildChanged(dataSnapshot: DataSnapshot, prevChildKey: String?) {
+                // Este método se llama cuando los datos en un nodo existente cambian
+                val user = dataSnapshot.child("/").getValue(Usuario::class.java)
+                user?.let {
+                    if (it.estado){
+                        Toast.makeText(this@UsuariosDisponiblesActivity, "Nuevo usuario disponible: " + it.nombre.toUpperCase(), Toast.LENGTH_SHORT).show()
+                    }
+                    // Aquí puedes trabajar con los datos del usuario que cambió
+
+                }
+            }
+
+            override fun onChildRemoved(dataSnapshot: DataSnapshot) {
+                // Este método se llama cuando se elimina un nodo hijo
+            }
+
+            override fun onChildMoved(dataSnapshot: DataSnapshot, prevChildKey: String?) {
+                // Este método se llama cuando se mueve un nodo hijo
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Este método se llama cuando se cancela la operación
+            }
+        })
+    }
+
     private fun loadAvailableUsers() {
-        myRef.addListenerForSingleValueEvent(object : ValueEventListener {
+        myRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
+                userList.clear()
                 for (userFolderSnapshot in dataSnapshot.children) {
                     // Aquí, cada "userFolderSnapshot" representa una carpeta de usuario individual en la carpeta "/users"
                     val user = userFolderSnapshot.child("/").getValue(Usuario::class.java)
                     //Toast.makeText(this@UsuariosDisponiblesActivity, "Estado: " + user!!.estado, Toast.LENGTH_SHORT).show()
                     user?.let {
+                        //Toast.makeText(this@UsuariosDisponiblesActivity, "ENtra en tiempo real", Toast.LENGTH_SHORT).show()
                         // Aquí puedes trabajar con los datos del usuario
-                        if (it.estado) userList.add(it)
+                        if (it.estado){
+                            userList.add(it)
+                        }else {
+                            userList.remove(it)
+                        }
+                        mUsuariosAdapter?.notifyDataSetChanged()
                     }
                 }
                 downloadFiles()
