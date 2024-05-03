@@ -98,27 +98,7 @@ class MapaActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
-        // Habilitar el botón de "Mi ubicación" en el mapa
-        //mMap.isMyLocationEnabled = true
 
-        // Obtener la ubicación actual del dispositivo y agregar un marcador
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return
-        }
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location ->
                 if (location != null) {
@@ -228,6 +208,23 @@ class MapaActivity : AppCompatActivity(), OnMapReadyCallback {
                             //Crear nuevo marcador
                             myMarker = mMap.addMarker(MarkerOptions().position(currentLatLng).title("Mi ubicación actual"))
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
+                            //Actualizar en la base de datos la posicion
+                            val currentUser = auth.currentUser
+                            currentUser?.let {
+                                // Obtén una referencia a la ubicación del usuario en la base de datos
+                                myRef = database.getReference(PATH_USERS+currentUser.uid)
+                                myRef.get().addOnSuccessListener { dataSnapshot ->
+                                    // Obtiene el usuario actual de la base de datos
+                                    val usuario = dataSnapshot.getValue(Usuario::class.java)
+                                    usuario?.let {
+                                        // Cambia el estado del usuario
+                                        it.latitud = currentLatLng.latitude
+                                        it.longitud = currentLatLng.longitude
+                                        // Actualiza el estado del usuario en la base de datos
+                                        myRef.setValue(it)
+                                    }
+                                }
+                            }
                         }
 
                     }
