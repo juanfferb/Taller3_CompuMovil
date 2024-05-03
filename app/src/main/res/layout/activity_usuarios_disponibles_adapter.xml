@@ -8,7 +8,7 @@ android:padding="10dp"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".Activities.UsuariosDisponiblesAdapter">
 
-<ImageView
+<de.hdodenhof.circleimageview.CircleImageView
     android:id="@+id/fotoUsuario"
     android:layout_width="0dp"
     android:layout_height="40dp"

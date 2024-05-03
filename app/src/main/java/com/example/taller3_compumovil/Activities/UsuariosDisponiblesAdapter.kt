@@ -23,16 +23,6 @@ class UsuariosDisponiblesAdapter(
     private val fotoUrlList: List<String> // Lista de URLs de las fotos de los usuarios
 ) : ArrayAdapter<Usuario>(context, 0, userList) {
 
-    private lateinit var auth: FirebaseAuth
-    private lateinit var database: FirebaseDatabase
-    private lateinit var usersReference: DatabaseReference
-
-    init {
-        auth = FirebaseAuth.getInstance()
-        database = FirebaseDatabase.getInstance()
-        usersReference = database.reference.child("users")
-    }
-
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var view = convertView
         if (view == null) {
@@ -45,11 +35,12 @@ class UsuariosDisponiblesAdapter(
 
         val usuario = userList[position]
         val fotoUrl = fotoUrlList[position] // Obtener la URL de la foto correspondiente al usuario
-
+        val foto = if (fotoUrl.isEmpty()) R.drawable.contactos_de_google else fotoUrl
         // Mostrar la foto de perfil
-        val ivFotoPerfil = view!!.findViewById<ImageView>(R.id.fotoUsuario)
+        val ivFotoPerfil = view!!.findViewById<de.hdodenhof.circleimageview.CircleImageView>(R.id.fotoUsuario)
+
         Glide.with(context)
-            .load(fotoUrl) // Utilizar la URL de la foto
+            .load(foto) // Utilizar la URL de la foto
             .placeholder(R.drawable.placeholder_image) // Placeholder mientras se carga la imagen
             .error(R.drawable.error_image) // Imagen de error si la carga falla
             .into(ivFotoPerfil)
