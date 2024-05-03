@@ -80,7 +80,7 @@ class MapaActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap = googleMap
 
         // Habilitar el botón de "Mi ubicación" en el mapa
-        mMap.isMyLocationEnabled = true
+        //mMap.isMyLocationEnabled = true
 
         // Obtener la ubicación actual del dispositivo y agregar un marcador
         if (ActivityCompat.checkSelfPermission(
@@ -200,7 +200,7 @@ class MapaActivity : AppCompatActivity(), OnMapReadyCallback {
                         val currentLatLng = LatLng(miUbi.latitude, miUbi.longitude)
                         val distanceBetweenTwoPoints = distance(miUbi.latitude, miUbi.longitude, myLocation!!.latitude, myLocation!!.longitude)
                         //Si se movió más de 7 metros (Esto es para el bug de la ubicación en un celular real)
-                        Toast.makeText(this@MapaActivity, "Distancia: $distanceBetweenTwoPoints", Toast.LENGTH_SHORT).show()
+                        //Toast.makeText(this@MapaActivity, "Distancia: $distanceBetweenTwoPoints", Toast.LENGTH_SHORT).show()
                         if(distanceBetweenTwoPoints > 7.0){
                             //Borrar marcador anterior
                             if(myMarker != null){
