@@ -82,6 +82,8 @@ class RegisterActivity : AppCompatActivity() {
                             //upcrb.setPhotoUri(Uri.parse("path/to/pic")) //fake uri, use Firebase Storage
                             //user.updateProfile(upcrb.build())
                             var usuario = Usuario()
+                            usuario.uid = user.uid
+                            usuario.profileImgUrl = selectedImageUri?.lastPathSegment ?: ""
                             usuario.nombre = binding.editTextName.text.toString()
                             usuario.apellido = binding.editTextLastName.text.toString()
                             usuario.noIdentificacion = binding.editTextId.text.toString().toInt()
