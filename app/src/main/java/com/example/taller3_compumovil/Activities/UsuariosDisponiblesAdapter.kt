@@ -1,5 +1,6 @@
 package com.example.taller3_compumovil.Activities
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -48,7 +49,11 @@ class UsuariosDisponiblesAdapter(
 
         // Manejar el clic en el botón
         view.findViewById<Button>(R.id.ubicacionUsuario).setOnClickListener {
-
+            val intent = Intent(context, MapaV2Activity::class.java)
+            intent.putExtra("latitud", usuario.latitud)
+            intent.putExtra("longitud", usuario.longitud)
+            intent.putExtra("uid", usuario.uid)
+            context.startActivity(intent)
         }
 
         return view
